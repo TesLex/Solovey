@@ -10,7 +10,7 @@
 
 namespace Routing;
 
-use Exception;
+use http\Exception;
 
 abstract class Controller
 {

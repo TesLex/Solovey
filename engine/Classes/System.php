@@ -10,7 +10,6 @@
 
 namespace Classes;
 
-
 class System
 {
 	public static function debug($s)
@@ -18,5 +17,10 @@ class System
 		echo('<pre>');
 		var_dump($s);
 		echo('</pre>');
+	}
+
+	public static function CC($c)
+	{
+		require $_SERVER['DOCUMENT_ROOT'] . '/app/Controllers/' . $c . '.php';
 	}
 }

@@ -13,27 +13,27 @@ namespace Routing;
 abstract class RestController
 {
 
-	protected $router;
+//	protected $router;
+//
+//	public function __construct(Router $router)
+//	{
+//		$this->router = $router;
+//	}
 
-	public function __construct(Router $router)
+	public function e404()
 	{
-		$this->router = $router;
+		echo self::x(array(
+			"code" => 404,
+			"message" => "NOT FOUND"
+		));
 	}
 
-	public function render($o)
+	public function x($o)
 	{
 		$encoded = json_encode($o);
 		echo $encoded;
 
 		return $encoded;
-	}
-
-	public function e404()
-	{
-		echo self::render(array(
-			"code" => 404,
-			"message" => "NOT FOUND"
-		));
 	}
 
 }

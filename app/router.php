@@ -11,8 +11,8 @@
 use Routing\Router;
 use Classes\System;
 
-require __DIR__ . '/Controllers/TestController.php';
+System::CC('TestController');
 
-Router::get('test', '/test', 'TestController:test');
 
-Router::match($_SERVER['REQUEST_URI']);
+Router::GET('test', '/test/([0-9])', 'TestController:test');
+Router::POST('test', '/test/([0-9])', 'TestController:test');

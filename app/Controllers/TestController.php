@@ -8,12 +8,14 @@
  * | ---
  */
 
-class TestController extends \Routing\RestController
+use Routing\RestController;
+
+class TestController extends RestController
 {
-	public function test()
+	public function test($p)
 	{
-		$this->render(array(
-			'test' => 'ok'
+		$this->x(array(
+			'test' => $p
 		));
 	}
 }

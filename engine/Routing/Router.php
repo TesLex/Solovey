@@ -2,8 +2,6 @@
 
 namespace Routing;
 
-use Classes\System;
-
 class Router
 {
 
@@ -13,7 +11,7 @@ class Router
 	protected static $deletes = array();
 	protected static $anys = array();
 
-	public static function get($name, $pattern, $controller)
+	public static function GET($name, $pattern, $controller)
 	{
 		self::$gets[$name] = array(
 			'pattern' => $pattern,
@@ -21,7 +19,7 @@ class Router
 		);
 	}
 
-	public static function post($name, $pattern, $controller)
+	public static function POST($name, $pattern, $controller)
 	{
 		self::$posts[$name] = array(
 			'pattern' => $pattern,
@@ -29,7 +27,7 @@ class Router
 		);
 	}
 
-	public static function put($name, $pattern, $controller)
+	public static function PUT($name, $pattern, $controller)
 	{
 		self::$puts[$name] = array(
 			'pattern' => $pattern,
@@ -38,7 +36,7 @@ class Router
 		);
 	}
 
-	public static function delete($name, $pattern, $controller)
+	public static function DELETE($name, $pattern, $controller)
 	{
 		self::$deletes[$name] = array(
 			'pattern' => $pattern,
@@ -46,7 +44,7 @@ class Router
 		);
 	}
 
-	public static function any($name, $pattern, $controller)
+	public static function ANY($name, $pattern, $controller)
 	{
 		self::$anys[$name] = array(
 			'pattern' => $pattern,
@@ -54,29 +52,34 @@ class Router
 		);
 	}
 
-	public static function match($uri)
+	public static function match($uri, $method)
 	{
-		foreach (self::$gets as $route) {
+		if ($method == 'GET') {
+			return self::m(self::$gets, $uri);
+		} elseif ($method == 'POST') {
+			return self::m(self::$posts, $uri);
+		} elseif ($method == 'PUT') {
+			return self::m(self::$puts, $uri);
+		} elseif ($method == 'DELETE') {
+			return self::m(self::$deletes, $uri);
+		} else {
+			return self::m(self::$anys, $uri);
+		}
+	}
+
+	private static function m($a, $uri)
+	{
+		foreach ($a as $route) {
 			$pattern = $route['pattern'];
 			if (preg_match("#$pattern#i", $uri, $matches)) {
-				System::debug($route);
-				return true;
+				return array(
+					'route' => $route,
+					'matches' => $matches
+				);
 			}
 		}
 
 		return false;
-
-//		if ($R['REQUEST_METHOD'] == 'GET') {
-//
-//		} elseif ($R['REQUEST_METHOD'] == 'POST') {
-//
-//		} elseif ($R['REQUEST_METHOD'] == 'PUT') {
-//
-//		} elseif ($R['REQUEST_METHOD'] == 'DELETE') {
-//
-//		} elseif ($R['REQUEST_METHOD'] == 'ANY') {
-//
-//		}
 	}
 
 }

@@ -14,12 +14,12 @@ class ApiController extends RestController
 {
 	public function main()
 	{
-		$this->render(new User('EXP'));
+		$this->x(new User('EXP'));
 	}
 
 	public function e404()
 	{
-		$this->render("404");
+		$this->x("404");
 	}
 }
 

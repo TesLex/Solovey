@@ -8,6 +8,8 @@
  * | ---
  */
 
+use Routing\Router;
+
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
 
@@ -22,4 +24,24 @@ spl_autoload_register(function ($class) {
 	throw new \LogicException(sprintf('Class "%s" not found in "%s"', $class, $path));
 });
 
+// Include custom routes
+
 include $_SERVER['DOCUMENT_ROOT'] . '/app/router.php';
+
+// Match route
+$route = Router::match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+
+if (!($route)) {
+	echo "404";
+} else {
+	$matches = $route['matches'];
+
+	list($class, $action) = explode(':', $route['route']['controller'], 2);
+
+	if ($matches != null) {
+		array_shift($matches);
+		call_user_func_array(array(new $class(), $action), $matches);
+	} else {
+		call_user_func(array(new $class(), $action));
+	}
+}
