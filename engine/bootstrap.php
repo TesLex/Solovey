@@ -10,6 +10,10 @@
 
 use Routing\Router;
 
+define('ROOT', dirname(__DIR__));
+define('APP', dirname(__DIR__) . '/app');
+define('ENGINE', dirname(__DIR__) . '/engine');
+
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
 
@@ -18,14 +22,11 @@ spl_autoload_register(function ($class) {
 
 	if (is_file($path)) {
 		require $path;
-		return;
 	}
-
-	throw new \LogicException(sprintf('Class "%s" not found in "%s"', $class, $path));
 });
 
-// Include custom routes
 
+// Include custom routes
 include $_SERVER['DOCUMENT_ROOT'] . '/app/router.php';
 
 // Match route
