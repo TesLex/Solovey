@@ -28,7 +28,7 @@ abstract class RestController
 		));
 	}
 
-	public function x($o)
+	public function x(...$o)
 	{
 		$encoded = json_encode($o);
 		echo $encoded;

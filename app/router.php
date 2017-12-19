@@ -13,6 +13,5 @@ use Classes\System;
 
 System::CC('TestController');
 
-
-Router::GET('test', '/test/([0-9])', 'TestController:test');
-Router::POST('test', '/test/([0-9])', 'TestController:test');
+Router::GET('home', '/', 'TestController:just');
+Router::GET('test', '/{class}/{method}', 'TestController:test');

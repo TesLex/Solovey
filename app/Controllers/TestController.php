@@ -12,10 +12,13 @@ use Routing\RestController;
 
 class TestController extends RestController
 {
-	public function test($p)
+	public function test($p, $x)
 	{
-		$this->x(array(
-			'test' => $p
-		));
+		$this->x($p, $x);
 	}
+
+    public function just()
+    {
+        echo 'OK';
+    }
 }

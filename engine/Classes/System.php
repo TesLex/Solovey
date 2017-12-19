@@ -12,15 +12,19 @@ namespace Classes;
 
 class System
 {
-	public static function debug($s)
+	public static function debug(...$s)
 	{
 		echo('<pre>');
-		var_dump($s);
+        foreach ($s as $item) {
+            var_dump($item);
+		}
 		echo('</pre>');
 	}
 
-	public static function CC($c)
+	public static function CC(...$c)
 	{
-		require $_SERVER['DOCUMENT_ROOT'] . '/app/Controllers/' . $c . '.php';
+        foreach ($c as $item) {
+            require $_SERVER['DOCUMENT_ROOT'] . '/app/Controllers/' . $item . '.php';
+	    }
 	}
 }

@@ -10,10 +10,6 @@
 
 use Routing\Router;
 
-define('ROOT', dirname(__DIR__));
-define('APP', dirname(__DIR__) . '/app');
-define('ENGINE', dirname(__DIR__) . '/engine');
-
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
 
@@ -36,6 +32,7 @@ if (!($route)) {
 	echo "404";
 } else {
 	$matches = $route['matches'];
+	$query = $route['query'];
 
 	list($class, $action) = explode(':', $route['route']['controller'], 2);
 
