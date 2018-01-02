@@ -1,12 +1,6 @@
 <?php
-/**
- * | -----------------------------
- * | Created by expexes on 30.11.17/21:26.
- * | Site: teslex.tech
- * | ------------------------------
- * | ErrorC.php
- * | ---
- */
+
+namespace Solovey\Classes;
 
 class ErrorC
 {

@@ -1,24 +1,11 @@
 <?php
-/**
- * | -----------------------------
- * | Created by expexes on 30.11.17/20:56.
- * | Site: teslex.tech
- * | ------------------------------
- * | config.php
- * | Web application configuration file
- * | ---
- */
 
-$ROUTER = array(
-	'ignore' => array(
-		'/public/',
-		'/'
-	)
-);
-
-$DB = array(
-	'driver' => 'pgsql',
+define('DATABASE', array(
 	'host' => 'localhost',
-	'port' => '5524',
-	'password' => ''
-);
+	'user' => 'db_user',
+	'name' => 'db_name',
+	'password' => 'db_password'
+));
+
+define('ADMIN_NAME', 'admin');
+define('ADMIN_PASSWORD', 'password');

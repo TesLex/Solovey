@@ -4,7 +4,7 @@
  * | Created by expexes on 29.11.17/23:01.
  * | Site: teslex.tech
  * | ------------------------------
- * | Utils.php
+ * | utils.php
  * | ---
  */
 
@@ -22,28 +22,27 @@ function stopAndRedirect($url)
 	exit;
 }
 
-
-function _GET($key)
-{
-	return isset($_GET[$key]) ? $_GET[$key] : null;
-}
-
-function _POST($key)
-{
-	return isset($_POST[$key]) ? $_POST[$key] : null;
-}
-
 function IS_POST()
 {
 	return $_SERVER['REQUEST_METHOD'] == 'POST';
 }
 
+function IS_PUT()
+{
+	return $_SERVER['REQUEST_METHOD'] == 'PUT';
+}
+
+function IS_DELETE()
+{
+	return $_SERVER['REQUEST_METHOD'] == 'DELETE';
+}
+
 function GET_METHOD()
 {
-	$method =  $_SERVER['REQUEST_METHOD'];
+	$method = $_SERVER['REQUEST_METHOD'];
 
-	if(IS_POST()){
-		if(isset($_SERVER['X-HTTP-METHOD-OVERRIDE'])){
+	if (IS_POST()) {
+		if (isset($_SERVER['X-HTTP-METHOD-OVERRIDE'])) {
 			$method = strtoupper($_SERVER['X-HTTP-METHOD-OVERRIDE']);
 		}
 	}
@@ -124,4 +123,77 @@ function GET_PATH_INFO($baseUrl = null)
 	}
 
 	return $pathInfo;
+}
+
+function require_all($dir, $depth = 0)
+{
+	$scan = glob("$dir/*");
+	foreach ($scan as $path) {
+		if (preg_match('/\.php$/', $path)) {
+			require $path;
+		} elseif (is_dir($path)) {
+			require_all($path, $depth + 1);
+		}
+	}
+}
+
+function debug(...$s)
+{
+	echo('<pre>');
+	foreach ($s as $item) {
+		var_dump($item);
+	}
+	echo('</pre>');
+}
+
+function connect_controller(...$c)
+{
+	foreach ($c as $item) {
+		require $_SERVER['DOCUMENT_ROOT'] . '/app/Controllers/' . $item . '.php';
+	}
+}
+
+function objectToObject($instance, $className)
+{
+	return unserialize(sprintf(
+		'O:%d:"%s"%s',
+		strlen($className),
+		$className,
+		strstr(strstr(serialize($instance), '"'), ':')
+	));
+}
+
+function arrayToObject(array $array, $className)
+{
+	return unserialize(sprintf(
+		'O:%d:"%s"%s',
+		strlen($className),
+		$className,
+		strstr(serialize($array), ':')
+	));
+}
+
+function checkRecaptcha($g_recaptcha_response, $secret, $remote = null)
+{
+	if (!isset($remote)) $remote = $_SERVER['REMOTE_ADDR'];
+
+	$re_data = http_build_query(
+		array(
+			'secret' => $secret,
+			'response' => $g_recaptcha_response,
+			'remoteip' => $remote
+		)
+	);
+
+	$opts = array('http' =>
+		array(
+			'method' => 'POST',
+			'header' => 'Content-type: application/x-www-form-urlencoded',
+			'content' => $re_data
+		)
+	);
+
+	$result = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, stream_context_create($opts)));
+
+	return $result->success;
 }

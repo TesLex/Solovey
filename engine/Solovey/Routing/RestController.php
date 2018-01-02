@@ -8,26 +8,14 @@
  * | ---
  */
 
-namespace Routing;
+namespace Solovey\Routing;
 
 abstract class RestController
 {
-
-//	protected $router;
-//
-//	public function __construct(Router $router)
-//	{
-//		$this->router = $router;
-//	}
-
-	public function e404()
-	{
-		echo self::x(array(
-			"code" => 404,
-			"message" => "NOT FOUND"
-		));
-	}
-
+	/**
+	 * @param array ...$o
+	 * @return string
+	 */
 	public function x(...$o)
 	{
 		$encoded = json_encode($o);
