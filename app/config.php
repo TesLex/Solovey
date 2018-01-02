@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors', 'on');
+error_reporting(E_ALL);
+
 define('DATABASE', array(
 	'host' => 'localhost',
 	'user' => 'db_user',

@@ -13,10 +13,10 @@ namespace Solovey\Routing;
 abstract class RestController
 {
 	/**
-	 * @param array ...$o
+	 * @param $o
 	 * @return string
 	 */
-	public function x(...$o)
+	public function x($o)
 	{
 		$encoded = json_encode($o);
 		echo $encoded;

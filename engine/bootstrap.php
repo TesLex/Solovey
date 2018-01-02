@@ -12,9 +12,6 @@ session_start();
 
 use Solovey\Routing\Router;
 
-ini_set('display_errors', 'on');
-error_reporting(E_ALL);
-
 require "utils.php";
 
 // Load Solovey
@@ -29,7 +26,7 @@ spl_autoload_register(function ($class) {
 require_all($_SERVER['DOCUMENT_ROOT'] . "/app");
 
 // Match route
-$route = Router::match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+$route = Router::match($_SERVER['REQUEST_URI'], GET_METHOD());
 
 if (!($route)) {
 	if (is_file($_SERVER['DOCUMENT_ROOT'] . '/pages/404.php')) {

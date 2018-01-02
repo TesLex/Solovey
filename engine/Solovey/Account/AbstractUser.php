@@ -10,12 +10,12 @@ abstract class AbstractUser
 
 	/**
 	 * AbstractUser constructor.
-	 * @param $email
+	 * @param $username
 	 * @param $password
 	 */
-	public function __construct($email, $password)
+	public function __construct($username, $password)
 	{
 		$this->password = $password;
-		$this->username = $email;
+		$this->username = $username;
 	}
 }
