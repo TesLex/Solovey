@@ -9,4 +9,4 @@
  * | ---
  */
 
-include 'engine/bootstrap.php';
+require_once 'engine/bootstrap.php';

@@ -16,13 +16,15 @@ class Router
 	 * @param $name
 	 * @param $pattern
 	 * @param $controller
+	 * @param string $action
 	 */
-	public static function GET($name, $pattern, $controller)
+	public static function GET($name, $pattern, $controller, $action = 'index')
 	{
 		self::$gets[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller
+			'controller' => $controller,
+			'action' => $action
 		);
 	}
 
@@ -30,13 +32,15 @@ class Router
 	 * @param $name
 	 * @param $pattern
 	 * @param $controller
+	 * @param string $action
 	 */
-	public static function POST($name, $pattern, $controller)
+	public static function POST($name, $pattern, $controller, $action = 'index')
 	{
 		self::$posts[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller
+			'controller' => $controller,
+			'action' => $action
 		);
 	}
 
@@ -44,13 +48,15 @@ class Router
 	 * @param $name
 	 * @param $pattern
 	 * @param $controller
+	 * @param string $action
 	 */
-	public static function PUT($name, $pattern, $controller)
+	public static function PUT($name, $pattern, $controller, $action = 'index')
 	{
 		self::$puts[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller
+			'controller' => $controller,
+			'action' => $action
 		);
 	}
 
@@ -58,27 +64,31 @@ class Router
 	 * @param $name
 	 * @param $pattern
 	 * @param $controller
+	 * @param string $action
 	 */
-	public static function DELETE($name, $pattern, $controller)
+	public static function DELETE($name, $pattern, $controller, $action = 'index')
 	{
-		self::$deletes[$name] = array(
+		self::$deletes[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller
-		);
+			'controller' => $controller,
+			'action' => $action
+		];
 	}
 
 	/**
 	 * @param $name
 	 * @param $pattern
 	 * @param $controller
+	 * @param string $action
 	 */
-	public static function ANY($name, $pattern, $controller)
+	public static function ANY($name, $pattern, $controller, $action = 'index')
 	{
 		self::$anys[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller
+			'controller' => $controller,
+			'action' => $action
 		);
 	}
 
@@ -114,20 +124,27 @@ class Router
 		$uri = self::removeSlashes($uri);
 
 		foreach ($a as $as) {
-			$pattern = $as['pattern'];
+			$main_pattern = $as['pattern'];
 
-			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(.+)', $pattern);
+			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(.+)', $main_pattern);
 
 			$pattern = preg_replace('/{([a-zA-Z0-9]+)\((.+)\)}/i', '(\2)', $pattern);
 
 			if (preg_match("#^$pattern$#i", $uri, $matches)) {
-				foreach ($matches as $k => $match)
-					if (substr($match, strlen($match) - 1, strlen($match)) === '/')
-						$matches[$k] = substr($match, 0, strlen($match) - 1);
+
+				$matches_normal = [];
+
+				unset($matches[0]);
+
+				preg_match_all('/{([a-zA-Z0-9]+)}/i', $main_pattern, $found);
+
+				foreach ($matches as $k => $match) {
+					$matches_normal[$found[1][$k - 1]] = $match;
+				}
 
 				self::$route = array(
 					'route' => $as,
-					'matches' => $matches,
+					'matches' => $matches_normal,
 					'query' => $GLOBALS['_' . $method]
 				);
 

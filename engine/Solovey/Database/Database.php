@@ -4,35 +4,38 @@ namespace Solovey\Database;
 
 use PDO;
 use PDOException;
+use Solovey\Database\Methods\Delete;
+use Solovey\Database\Methods\Insert;
+use Solovey\Database\Methods\Select;
+use Solovey\Database\Methods\Update;
 
 class Database
 {
 
+	public static $pdo;
+	public static $separator = ',';
 	private $host;
-
 	private $user;
-
 	private $name;
-
 	private $password;
-
-	private $pdo;
 
 	/**
 	 * Database constructor.
 	 * @param $host
+	 * @param int $port
 	 * @param $user
 	 * @param $name
 	 * @param $password
+	 * @param string $driver
 	 */
-	public function __construct($host, $user, $name, $password)
+	public function __construct($host, $port = 3306, $user, $name, $password, $driver = 'mysql')
 	{
 		$this->host = $host;
 		$this->user = $user;
 		$this->name = $name;
 		$this->password = $password;
 
-		$dsn = "mysql:host=$host;dbname=$name;charset=utf8";
+		$dsn = "$driver:host=$host;dbname=$name;port=$port" . (($driver === 'mysql') ? 'charset=utf8;' : '');
 		$opt = [
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -40,117 +43,47 @@ class Database
 		];
 
 		try {
-			$this->pdo = new PDO($dsn, $user, $password, $opt);
+			self::$pdo = new PDO($dsn, $user, $password, $opt);
 		} catch (PDOException $e) {
 			die('ERROR DATABASE CONNECTION: ' . $e->getMessage());
 		}
+
+		if ($driver === 'pgsql') self::$separator = 'AND';
 	}
 
 	/**
-	 * @param $what
-	 * @param $from
-	 * @param array $where
-	 * @param string $separator
-	 * @return \PDOStatement
+	 * @param array ...$what
+	 * @return Select
 	 */
-	function select($what, $from, $where = array(), $separator = '=')
+	function select(...$what)
 	{
-		$w = '';
-
-		foreach ($where as $item => $value) {
-			$w .= $item . ' ' . $separator . ' :' . $item . ', ';
-		}
-
-		$w = substr($w, 0, strlen($w) - 2);
-
-		$query = 'SELECT ' . $what . ' FROM ' . $from . (sizeof($where) > 0 ? ' WHERE ' . $w : '');
-
-		$stmt = $this->pdo->prepare($query);
-
-		$stmt->execute($where);
-
-		return $stmt;
+		return new Select($what);
 	}
 
 	/**
 	 * @param $where
-	 * @param array $what
-	 * @return \PDOStatement
+	 * @return Insert
 	 */
-	function insert($where, $what = array())
+	function insert($where)
 	{
-		$items = '';
-		$values = '';
-
-		foreach ($what as $item => $value) {
-			$items .= $item . ', ';
-			$values .= "'" . $value . "', ";
-		}
-
-		$items = substr($items, 0, strlen($items) - 2);
-		$values = substr($values, 0, strlen($values) - 2);
-
-		$query = "INSERT INTO $where ($items) VALUES ($values)";
-
-		$stmt = $this->pdo->query($query);
-
-		return $stmt;
+		return new Insert($where);
 	}
 
 	/**
 	 * @param $what
-	 * @param array $set
-	 * @param null $where
-	 * @return \PDOStatement
+	 * @return Update
 	 */
-	function update($what, $set = array(), $where = null)
+	function update($what)
 	{
-		$values = '';
-
-		foreach ($set as $item => $value) {
-			$values .= $item . ' = :' . $item . ', ';
-		}
-
-		$values = substr($values, 0, strlen($values) - 2);
-
-		$query = 'UPDATE ' . $what . ' SET ' . $values . (isset($where) ? ' WHERE ' . $where : '');
-
-		$stmt = $this->pdo->prepare($query);
-
-		$stmt->execute($set);
-
-		return $stmt;
+		return new Update($what);
 	}
 
 	/**
 	 * @param $from
-	 * @param array $where
-	 * @return \PDOStatement
+	 * @return Delete
 	 */
-	function delete($from, $where = array())
+	function delete($from)
 	{
-		$w = '';
-
-		foreach ($where as $item => $value) {
-			$w .= $item . ' = :' . $item . ', ';
-		}
-
-		$w = substr($w, 0, strlen($w) - 2);
-
-		$query = 'DELETE FROM ' . $from . (sizeof($where) > 0 ? ' WHERE ' . $w : '');
-
-		$stmt = $this->pdo->prepare($query);
-
-		$stmt->execute($where);
-
-		return $stmt;
-	}
-
-	/**
-	 * @return PDO
-	 */
-	function getPdo()
-	{
-		return $this->pdo;
+		return new Delete($from);
 	}
 }

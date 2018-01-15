@@ -8,28 +8,26 @@ use Solovey\Account\AbstractUser;
 interface UserService
 {
 	/**
-	 * UserService constructor.
-	 * @param AbstractUser $user
-	 */
-	function __construct(AbstractUser $user);
-
-	/**
 	 * @return mixed
 	 */
 	static function logout();
 
 	/**
+	 * @param $username
+	 * @param $password
 	 * @return mixed
 	 */
-	function login();
+	function login($username, $password);
 
 	/**
+	 * @param AbstractUser $user
 	 * @return mixed
 	 */
-	function register();
+	function register(AbstractUser $user);
 
 	/**
+	 * @param $id
 	 * @return mixed
 	 */
-	function remove();
+	function remove($id);
 }
