@@ -15,80 +15,85 @@ class Router
 	/**
 	 * @param $name
 	 * @param $pattern
-	 * @param $controller
-	 * @param string $action
+	 * @param array $controller
+	 * @param null $middleware
 	 */
-	public static function GET($name, $pattern, $controller, $action = 'index')
+	public static function GET($name, $pattern, $controller = [], $middleware = null)
 	{
 		self::$gets[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller,
-			'action' => $action
+			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
+			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'middleware' => $middleware
 		);
 	}
 
 	/**
 	 * @param $name
 	 * @param $pattern
-	 * @param $controller
-	 * @param string $action
+	 * @param array $controller
+	 * @param null $middleware
 	 */
-	public static function POST($name, $pattern, $controller, $action = 'index')
+	public static function POST($name, $pattern, $controller = [], $middleware = null)
 	{
 		self::$posts[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller,
-			'action' => $action
+			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
+			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'middleware' => $middleware
 		);
 	}
 
 	/**
 	 * @param $name
 	 * @param $pattern
-	 * @param $controller
-	 * @param string $action
+	 * @param array $controller
+	 * @param null $middleware
 	 */
-	public static function PUT($name, $pattern, $controller, $action = 'index')
+	public static function PUT($name, $pattern, $controller = [], $middleware = null)
 	{
 		self::$puts[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller,
-			'action' => $action
+			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
+			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'middleware' => $middleware
 		);
 	}
 
 	/**
 	 * @param $name
 	 * @param $pattern
-	 * @param $controller
-	 * @param string $action
+	 * @param array $controller
+	 * @param null $middleware
 	 */
-	public static function DELETE($name, $pattern, $controller, $action = 'index')
+	public static function DELETE($name, $pattern, $controller = [], $middleware = null)
 	{
 		self::$deletes[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller,
-			'action' => $action
+			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
+			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'middleware' => $middleware
 		];
 	}
 
 	/**
 	 * @param $name
 	 * @param $pattern
-	 * @param $controller
-	 * @param string $action
+	 * @param array $controller
+	 * @param null $middleware
 	 */
-	public static function ANY($name, $pattern, $controller, $action = 'index')
+	public static function ANY($name, $pattern, $controller = [], $middleware = null)
 	{
 		self::$anys[$name] = array(
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => $controller,
-			'action' => $action
+			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
+			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'middleware' => $middleware
 		);
 	}
 
@@ -124,22 +129,22 @@ class Router
 		$uri = self::removeSlashes($uri);
 
 		foreach ($a as $as) {
-			$main_pattern = $as['pattern'];
+			$main_pattern = self::removeSlashes($as['pattern']);
 
 			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(.+)', $main_pattern);
 
-			$pattern = preg_replace('/{([a-zA-Z0-9]+)\((.+)\)}/i', '(\2)', $pattern);
+			$pattern = preg_replace('/{(.+)\((.+)\)}/i', '(\2)', $pattern);
 
 			if (preg_match("#^$pattern$#i", $uri, $matches)) {
 
 				$matches_normal = [];
 
-				unset($matches[0]);
+				array_shift($matches);
 
-				preg_match_all('/{([a-zA-Z0-9]+)}/i', $main_pattern, $found);
+				preg_match_all('/{(.+)}/i', $main_pattern, $found);
 
 				foreach ($matches as $k => $match) {
-					$matches_normal[$found[1][$k - 1]] = $match;
+					$matches_normal[$found[1][$k]] = $match;
 				}
 
 				self::$route = array(
@@ -170,10 +175,9 @@ class Router
 		if ($s === '/' || $s === '\\') {
 			$uri = substr($uri, 0, strlen($uri) - 1);
 
-			self::removeSlashes($uri);
+			$uri = self::removeSlashes($uri);
 		}
 
 		return $uri;
 	}
-
 }

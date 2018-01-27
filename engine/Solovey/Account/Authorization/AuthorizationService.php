@@ -3,7 +3,25 @@
 namespace Solovey\Account\Authorization;
 
 
-abstract class AuthorizationService
+use Solovey\Account\AbstractUser;
+
+class AuthorizationService implements Authorization
 {
-	// TODO: Make it..
+	/**
+	 * @param $username
+	 * @param $password
+	 * @return AbstractUser
+	 */
+	function authorize($username, $password)
+	{
+		// TODO: Implement authorize() method.
+	}
+
+	/**
+	 * @return mixed
+	 */
+	function after()
+	{
+		// TODO: Implement after() method.
+	}
 }

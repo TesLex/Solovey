@@ -14,4 +14,9 @@ interface Authorization
 	 */
 	function authorize($username, $password);
 
+	/**
+	 * @return mixed
+	 */
+	function after();
+
 }
