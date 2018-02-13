@@ -27,9 +27,8 @@ class SRError extends SError
 		$this->solution = $solution;
 		$this->title = $title;
 
-		http_response_code($this->code);
-
 		header("Content-Type: application/json");
+		header("HTTP/1.1 $code $title");
 
 		echo json_encode([
 			'success' => false,

@@ -4,7 +4,7 @@
  * | Created by exp on 1/27/18/6:47 PM.
  * | Site: teslex.tech
  * | ------------------------------
- * | AuthMiddleware.php
+ * | AppMiddleware.php
  * | ---
  */
 

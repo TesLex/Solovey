@@ -6,5 +6,3 @@ error_reporting(E_ALL);
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: *");
-
-define('USE_HTACCESS', false);

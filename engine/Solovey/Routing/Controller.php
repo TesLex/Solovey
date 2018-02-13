@@ -4,7 +4,7 @@
  * | Created by expexes on 29.11.17/23:05.
  * | Site: teslex.tech
  * | ------------------------------
- * | Controller.phpp
+ * | Controller.php
  * | ---
  */
 

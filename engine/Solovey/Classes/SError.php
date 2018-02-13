@@ -26,7 +26,7 @@ class SError
 		$this->solution = $solution;
 		$this->title = $title;
 
-		http_response_code($this->code);
+		header("HTTP/1.1 $code $title");
 
 		render("{$_SERVER['DOCUMENT_ROOT']}/pages/error", [
 			'code' => $this->code,

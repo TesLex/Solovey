@@ -16,66 +16,23 @@ class Router
 	 * @param $name
 	 * @param $pattern
 	 * @param array $controller
-	 * @param null $middleware
+	 * @param array|null $middleware
 	 */
-	public static function GET($name, $pattern, $controller = [], $middleware = null)
+	public static function GET($name, $pattern, $controller = [], $middleware = [])
 	{
-		self::$gets[$name] = array(
-			'name' => $name,
-			'pattern' => $pattern,
-			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
-			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
-			'middleware' => $middleware
-		);
-	}
+		$action = 'index';
+		$controllerX = $controller;
 
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param array $controller
-	 * @param null $middleware
-	 */
-	public static function POST($name, $pattern, $controller = [], $middleware = null)
-	{
-		self::$posts[$name] = array(
-			'name' => $name,
-			'pattern' => $pattern,
-			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
-			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
-			'middleware' => $middleware
-		);
-	}
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
 
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param array $controller
-	 * @param null $middleware
-	 */
-	public static function PUT($name, $pattern, $controller = [], $middleware = null)
-	{
-		self::$puts[$name] = array(
+		self::$gets[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
-			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
-			'middleware' => $middleware
-		);
-	}
-
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param array $controller
-	 * @param null $middleware
-	 */
-	public static function DELETE($name, $pattern, $controller = [], $middleware = null)
-	{
-		self::$deletes[$name] = [
-			'name' => $name,
-			'pattern' => $pattern,
-			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
-			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'controller' => $controllerX,
+			'action' => $action,
 			'middleware' => $middleware
 		];
 	}
@@ -84,17 +41,100 @@ class Router
 	 * @param $name
 	 * @param $pattern
 	 * @param array $controller
-	 * @param null $middleware
+	 * @param array|null $middleware
 	 */
-	public static function ANY($name, $pattern, $controller = [], $middleware = null)
+	public static function POST($name, $pattern, $controller = [], $middleware = [])
 	{
-		self::$anys[$name] = array(
+		$action = 'index';
+		$controllerX = $controller;
+
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
+
+		self::$gets[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
-			'controller' => isset($controller['class']) ? $controller['class'] : $controller[0],
-			'action' => isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index',
+			'controller' => $controllerX,
+			'action' => $action,
 			'middleware' => $middleware
-		);
+		];
+	}
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param array $controller
+	 * @param array|null $middleware
+	 */
+	public static function PUT($name, $pattern, $controller = [], $middleware = [])
+	{
+		$action = 'index';
+		$controllerX = $controller;
+
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
+
+		self::$gets[$name] = [
+			'name' => $name,
+			'pattern' => $pattern,
+			'controller' => $controllerX,
+			'action' => $action,
+			'middleware' => $middleware
+		];
+	}
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param array $controller
+	 * @param array|null $middleware
+	 */
+	public static function DELETE($name, $pattern, $controller = [], $middleware = [])
+	{
+		$action = 'index';
+		$controllerX = $controller;
+
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
+
+		self::$gets[$name] = [
+			'name' => $name,
+			'pattern' => $pattern,
+			'controller' => $controllerX,
+			'action' => $action,
+			'middleware' => $middleware
+		];
+	}
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param array $controller
+	 * @param array|null $middleware
+	 */
+	public static function ANY($name, $pattern, $controller = [], $middleware = [])
+	{
+		$action = 'index';
+		$controllerX = $controller;
+
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
+
+		self::$gets[$name] = [
+			'name' => $name,
+			'pattern' => $pattern,
+			'controller' => $controllerX,
+			'action' => $action,
+			'middleware' => $middleware
+		];
 	}
 
 	/**
@@ -171,9 +211,14 @@ class Router
 		}
 
 		$s = substr($uri, strlen($uri) - 1, strlen($uri));
+		$sx = substr($uri, 0, 1);
 
 		if ($s === '/' || $s === '\\') {
 			$uri = substr($uri, 0, strlen($uri) - 1);
+
+			$uri = self::removeSlashes($uri);
+		} else if ($sx === '/' || $sx === '\\') {
+			$uri = substr($uri, 1, strlen($uri));
 
 			$uri = self::removeSlashes($uri);
 		}

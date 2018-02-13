@@ -54,30 +54,35 @@ try {
 	$route = Router::match($_SERVER['REQUEST_URI'], GET_METHOD());
 
 	if (!($route)) {
-		header("HTTP/1.1 404 Not Found");
-		if (is_file($_SERVER['DOCUMENT_ROOT'] . '/pages/error.php')) {
-			if (IS_GET())
-				return new SError('NOT FOUND', 'Page not found!', 404);
-			else
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+			if (is_file($_SERVER['DOCUMENT_ROOT'] . '/pages/error.php')) {
 				return new SRError('NOT FOUND', 'Page not found!', 404);
+			} else {
+				echo 404;
+			}
 		} else {
-			echo 404;
+			return new SError('NOT FOUND', 'Page not found!', 404);
 		}
 	} else {
 		$matches = $route['matches'];
 		$query = $route['query'];
 
-		$class = $route['route']['controller'];
-		$action = $route['route']['action'];
-		$middleware = $route['route']['middleware'];
+		$controller = $route['route']['controller'];
 
-		if (isset($route['route']['middleware']))
-			call_user_func(array(new $middleware(), 'index'));
+		$action = $route['route']['action'];
+		$middlewareList = $route['route']['middleware'];
+
+		if (sizeof($route['route']['middleware']) > 0)
+			foreach ($middlewareList as $middleware)
+				call_user_func(array(new $middleware(), 'index'));
 
 		if ($matches != null) {
-			call_user_func_array(array(new $class(), $action), $matches);
+			is_callable($controller) ? call_user_func_array($controller, $matches) : call_user_func_array(array(new $controller(), $action), $matches);
 		} else {
-			call_user_func(array(new $class(), $action));
+			if (is_callable($controller))
+				call_user_func($controller);
+			else
+				call_user_func(array(new $controller(), $action));
 		}
 	}
 } catch (Exception $e) {
