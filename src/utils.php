@@ -42,6 +42,11 @@ function GET_METHOD()
 	return $method;
 }
 
+function GET_CLIENT_IP()
+{
+	return $_SERVER['REMOTE_ADDR'] ?: ($_SERVER['HTTP_X_FORWARDED_FOR'] ?: $_SERVER['HTTP_CLIENT_IP']);
+}
+
 
 function require_all($dir, $depth = 0)
 {
@@ -86,18 +91,20 @@ function a2o(array $array, $className)
 
 function o2a($object)
 {
-	$public = [];
+	$a = [];
 	$reflection = new ReflectionClass($object);
 	foreach ($reflection->getProperties() as $property) {
 		$property->setAccessible(true);
-		$public[$property->getName()] = $property->getValue($object);
+		$a[$property->getName()] = $property->getValue($object);
 	}
-	return $public;
+	return $a;
 }
 
-function checkRecaptcha($g_recaptcha_response, $secret, $remote = null)
+function checkRecaptcha($secret = null, $g_recaptcha_response = null, $remote = null)
 {
-	if (!isset($remote)) $remote = $_SERVER['REMOTE_ADDR'];
+	if (!isset($remote)) $remote = GET_CLIENT_IP();
+	if (!isset($secret)) $secret = TOOLS['recaptcha_secret'];
+	if (!isset($remote)) $remote = $_REQUEST['g_recaptcha_response'];
 
 	$re_data = http_build_query(
 		array(

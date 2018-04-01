@@ -53,6 +53,7 @@ class Database
 	}
 
 	/**
+	 * In dev now!
 	 * @param array ...$what
 	 * @return Select
 	 */
@@ -62,6 +63,7 @@ class Database
 	}
 
 	/**
+	 * In dev now!
 	 * @param $where
 	 * @return Insert
 	 */
@@ -71,6 +73,7 @@ class Database
 	}
 
 	/**
+	 * In dev now!
 	 * @param $what
 	 * @return Update
 	 */
@@ -80,6 +83,7 @@ class Database
 	}
 
 	/**
+	 * In dev now!
 	 * @param $from
 	 * @return Delete
 	 */

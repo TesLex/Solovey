@@ -9,7 +9,7 @@ interface CrudService
 	 * @param $object
 	 * @return mixed
 	 */
-	function add($object);
+	function create($object);
 
 	/**
 	 * @param $object
