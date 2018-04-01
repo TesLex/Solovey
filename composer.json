@@ -1,0 +1,20 @@
+{
+	"name": "expexes/solovey",
+	"description": "simple php framework",
+	"type": "library",
+	"license": "GPL-3",
+	"authors": [
+		{
+			"name": "expexes",
+			"email": "devid.kohut@gmail.com"
+		}
+	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/expexes/Solovey"
+		}
+	],
+	"minimum-stability": "alpha",
+	"require": {}
+}

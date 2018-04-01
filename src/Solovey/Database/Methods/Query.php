@@ -1,4 +1,12 @@
 <?php
+/**
+ * | -----------------------------
+ * | Created by exp on 4/1/18/8:21 PM.
+ * | Site: teslex.tech
+ * | ------------------------------
+ * | Query.php
+ * | ---
+ */
 
 namespace Solovey\Database\Methods;
 
@@ -6,57 +14,29 @@ namespace Solovey\Database\Methods;
 use Exception;
 use Solovey\Database\Database;
 
-class Insert
+class Query
 {
 
-	private $query = 'INSERT INTO ';
+	private $query = '';
 	private $data = [];
 	private $transactional = false;
 
 	/**
-	 * Insert constructor.
-	 * @param string $where
+	 * Query constructor.
+	 * @param string $query
 	 */
-	public function __construct($where)
+	public function __construct($query)
 	{
-		$this->query .= "$where ";
+		$this->query = $query;
 	}
 
 	/**
-	 * @param $val
+	 * @param array $data
 	 * @return $this
 	 */
-	public function values($val)
+	public function data($data)
 	{
-		$items = '';
-		$values = '';
-
-		foreach ($val as $item => $value) {
-			$items .= $item . ', ';
-
-			if (preg_match('/^solovey_database_unbind\((.*)\)$/i', $value, $match)) {
-				$values .= "$item = $match[1], ";
-			} else {
-				$values .= "?, ";
-				array_push($this->data, $value);
-			}
-		}
-
-		$items = substr($items, 0, strlen($items) - 2);
-		$values = substr($values, 0, strlen($values) - 2);
-
-		$this->query .= "($items) VALUES ($values) ";
-
-		return $this;
-	}
-
-	/**
-	 * @param $i
-	 * @return $this
-	 */
-	public function i($i)
-	{
-		$this->query .= "$i ";
+		$this->data = $data;
 		return $this;
 	}
 
@@ -74,7 +54,6 @@ class Insert
 	 */
 	public function execute()
 	{
-
 		$stmt = null;
 
 		if ($this->transactional) {
@@ -95,6 +74,14 @@ class Insert
 		}
 
 		return $stmt;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getQuery()
+	{
+		return $this->query;
 	}
 
 }

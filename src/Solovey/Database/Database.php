@@ -6,6 +6,7 @@ use PDO;
 use PDOException;
 use Solovey\Database\Methods\Delete;
 use Solovey\Database\Methods\Insert;
+use Solovey\Database\Methods\Query;
 use Solovey\Database\Methods\Select;
 use Solovey\Database\Methods\Update;
 
@@ -85,5 +86,13 @@ class Database
 	function delete($from)
 	{
 		return new Delete($from);
+	}
+
+	/**
+	 * @param $query
+	 * @return Query
+	 */
+	function query($query) {
+		return new Query($query);
 	}
 }

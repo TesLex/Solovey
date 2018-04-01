@@ -6,49 +6,48 @@ namespace Solovey\Database\Methods;
 use Exception;
 use Solovey\Database\Database;
 
-class Delete
+class Insert
 {
 
-	private $query = 'DELETE FROM ';
+	private $query = 'INSERT INTO ';
 	private $data = [];
-	private $separator = ',';
 	private $transactional = false;
 
 	/**
-	 * Delete constructor.
-	 * @param $from
+	 * Insert constructor.
+	 * @param string $where
 	 */
-	public function __construct($from)
+	public function __construct($where)
 	{
-		$this->query .= "$from ";
-		$this->separator = Database::$separator;
+		$this->query .= "$where ";
 	}
 
 	/**
-	 * @param array $where
+	 * @param $val
 	 * @return $this
 	 */
-	public function where(array $where)
+	public function values($val)
 	{
-		$w = '';
+		$items = '';
+		$values = '';
 
-		foreach ($where as $item => $value) {
-			$sep = '=';
-			if (preg_match('/[\s]+/i', $item, $match)) {
-				$sep = '';
-			}
+		foreach ($val as $item => $value) {
+			if (!is_null($value)) {
+				$items .= $item . ', ';
 
-			if (preg_match('/^solovey_database_unbind\((.+)\)$/i', $value, $match)) {
-				$w .= "$item $sep $match[1] $this->separator ";
-			} else {
-				$w .= "$item $sep ? $this->separator ";
-				array_push($this->data, $value);
+				if (preg_match('/^solovey_database_unbind\((.*)\)$/i', $value, $match)) {
+					$values .= "$item = $match[1], ";
+				} else {
+					$values .= "?, ";
+					array_push($this->data, $value);
+				}
 			}
 		}
 
-		$w = substr($w, 0, strlen($w) - ($this->separator === ',' ? 2 : 5));
+		$items = substr($items, 0, strlen($items) - 2);
+		$values = substr($values, 0, strlen($values) - 2);
 
-		$this->query .= "WHERE $w ";
+		$this->query .= "($items) VALUES ($values) ";
 
 		return $this;
 	}
@@ -77,6 +76,7 @@ class Delete
 	 */
 	public function execute()
 	{
+
 		$stmt = null;
 
 		if ($this->transactional) {
@@ -98,5 +98,14 @@ class Delete
 
 		return $stmt;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getQuery()
+	{
+		return $this->query;
+	}
+
 
 }

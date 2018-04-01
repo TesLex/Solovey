@@ -54,9 +54,10 @@ class Select
 
 	/**
 	 * @param array $where
+	 * @param bool $n
 	 * @return $this
 	 */
-	public function where(array $where)
+	public function where(array $where, $n = true)
 	{
 		$w = '';
 
@@ -76,7 +77,7 @@ class Select
 
 		$w = substr($w, 0, strlen($w) - ($this->separator === ',' ? 2 : 5));
 
-		$this->query .= ("WHERE $w ");
+		$this->query .= ($n ? "WHERE $w " : "$w ");
 
 		return $this;
 	}
@@ -118,7 +119,8 @@ class Select
 	/**
 	 * @return $this
 	 */
-	public function transactional() {
+	public function transactional()
+	{
 		$this->transactional = true;
 		return $this;
 	}
@@ -150,4 +152,13 @@ class Select
 
 		return $stmt;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getQuery()
+	{
+		return $this->query;
+	}
+
 }

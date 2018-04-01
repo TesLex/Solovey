@@ -53,7 +53,7 @@ class Router
 			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
 
-		self::$gets[$name] = [
+		self::$posts[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
 			'controller' => $controllerX,
@@ -78,7 +78,7 @@ class Router
 			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
 
-		self::$gets[$name] = [
+		self::$puts[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
 			'controller' => $controllerX,
@@ -103,7 +103,7 @@ class Router
 			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
 
-		self::$gets[$name] = [
+		self::$deletes[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
 			'controller' => $controllerX,
@@ -128,7 +128,7 @@ class Router
 			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
 
-		self::$gets[$name] = [
+		self::$anys[$name] = [
 			'name' => $name,
 			'pattern' => $pattern,
 			'controller' => $controllerX,
