@@ -14,17 +14,7 @@ use Solovey\Classes\SError;
 use Solovey\Classes\SRError;
 use Solovey\Routing\Router;
 
-//require "utils.php";
-
 try {
-
-//	spl_autoload_register(function ($class) {
-//		$path = __DIR__ . '/' . str_replace('\\', '/', $class) . '.php';
-//
-//		if (is_file($path)) {
-//			require_once $path;
-//		}
-//	}, true);
 
 // Have access??
 	if (startsWith($_SERVER['REQUEST_URI'], '/app/') ||

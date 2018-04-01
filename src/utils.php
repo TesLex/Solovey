@@ -64,7 +64,7 @@ function debug(...$s)
 	echo('</pre>');
 }
 
-function objectToObject($instance, $className)
+function o2o($instance, $className)
 {
 	return unserialize(sprintf(
 		'O:%d:"%s"%s',
@@ -74,7 +74,7 @@ function objectToObject($instance, $className)
 	));
 }
 
-function arrayToObject(array $array, $className)
+function a2o(array $array, $className)
 {
 	return unserialize(sprintf(
 		'O:%d:"%s"%s',
@@ -82,6 +82,17 @@ function arrayToObject(array $array, $className)
 		$className,
 		strstr(serialize($array), ':')
 	));
+}
+
+function o2a($object)
+{
+	$public = [];
+	$reflection = new ReflectionClass($object);
+	foreach ($reflection->getProperties() as $property) {
+		$property->setAccessible(true);
+		$public[$property->getName()] = $property->getValue($object);
+	}
+	return $public;
 }
 
 function checkRecaptcha($g_recaptcha_response, $secret, $remote = null)
@@ -203,10 +214,12 @@ function unbind($s)
 function startApplication($app = 'app')
 {
 	spl_autoload_register(function ($class) use ($app) {
-		$path = str_replace('engine', $app, __DIR__) . '/' . str_replace('\\', '/', $class) . '.php';
+		$path = $_SERVER['DOCUMENT_ROOT'] . '/' . $app . '/' . str_replace('\\', '/', $class) . '.php';
+
+		debug($path);
 
 		if (is_file($path)) {
-			require $path;
+			require_once $path;
 		}
 	}, true);
 }
