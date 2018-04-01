@@ -10,5 +10,14 @@
 		}
 	],
 	"minimum-stability": "dev",
-	"require": {}
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"Solovey": "src/"
+		},
+		"files": [
+			"src/utils.php",
+			"src/bootstrap.php"
+		]
+	}
 }
