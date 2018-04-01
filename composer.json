@@ -2,7 +2,7 @@
 	"name": "expexes/solovey",
 	"description": "simple php framework",
 	"type": "library",
-	"license": "GPL-3",
+	"license": "GPL-3.0-only",
 	"authors": [
 		{
 			"name": "expexes",
