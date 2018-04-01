@@ -223,8 +223,6 @@ function startApplication($app = 'app')
 	spl_autoload_register(function ($class) use ($app) {
 		$path = $_SERVER['DOCUMENT_ROOT'] . '/' . $app . '/' . str_replace('\\', '/', $class) . '.php';
 
-		debug($path);
-
 		if (is_file($path)) {
 			require_once $path;
 		}
