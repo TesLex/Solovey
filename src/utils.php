@@ -47,6 +47,10 @@ function GET_CLIENT_IP()
 	return $_SERVER['REMOTE_ADDR'] ?: ($_SERVER['HTTP_X_FORWARDED_FOR'] ?: $_SERVER['HTTP_CLIENT_IP']);
 }
 
+function DATA() {
+	return file_get_contents("php://input");
+}
+
 
 function require_all($dir, $depth = 0)
 {
