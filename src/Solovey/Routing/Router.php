@@ -14,6 +14,13 @@ class Router
 
 	protected static $groups = array();
 
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param $controllers
+	 * @param array $middleware | in dev
+	 */
 	public static function GROUP($name, $pattern, $controllers, $middleware = [])
 	{
 		foreach ($controllers as $method => $controller) {
@@ -147,6 +154,13 @@ class Router
 	 */
 	public static function ANY($name, $pattern, $controller = [], $middleware = [])
 	{
+		self::GET($name, $pattern, $controller, $middleware);
+		self::POST($name, $pattern, $controller, $middleware);
+		self::PUT($name, $pattern, $controller, $middleware);
+		self::DELETE($name, $pattern, $controller, $middleware);
+
+		/* TODO: доробити це по-людськи */
+
 		$action = 'index';
 		$controllerX = $controller;
 
@@ -164,85 +178,75 @@ class Router
 		];
 	}
 
-	/**
-	 * @param $uri
-	 * @return bool|string
-	 */
-	private static function removeSlashes($uri)
-	{
-		if (strlen($uri) < 2) {
-			return $uri;
-		}
-
-		$s = substr($uri, strlen($uri) - 1, strlen($uri));
-		$sx = substr($uri, 0, 1);
-
-		if ($s === '/' || $s === '\\') {
-			$uri = substr($uri, 0, strlen($uri) - 1);
-
-			$uri = self::removeSlashes($uri);
-		} else if ($sx === '/' || $sx === '\\') {
-			$uri = substr($uri, 1, strlen($uri));
-
-			$uri = self::removeSlashes($uri);
-		}
-
-		return $uri;
-	}
-
-	public static function match($uri, $method)
+	public static function check($uri, $method)
 	{
 		if ($method == 'GET') {
-			return self::check(self::$gets, $uri, $method);
+			return self::match(self::$gets, $uri, $method);
 		} elseif ($method == 'POST') {
-			return self::check(self::$posts, $uri, $method);
+			return self::match(self::$posts, $uri, $method);
 		} elseif ($method == 'PUT') {
-			return self::check(self::$puts, $uri, $method);
+			return self::match(self::$puts, $uri, $method);
 		} elseif ($method == 'DELETE') {
-			return self::check(self::$deletes, $uri, $method);
+			return self::match(self::$deletes, $uri, $method);
 		} else {
-			return self::check(self::$anys, $uri, $method);
+			return self::match(self::$anys, $uri, $method);
 		}
 	}
 
 	/**
-	 * @param $all
+	 * @param array $routes
 	 * @param $uri
 	 * @param $method
 	 * @return array|bool
-	 * @internal param $a
 	 */
-	public static function check($all, $uri, $method)
+	public static function match(array $routes, $uri, $method)
 	{
 
-		$uri = preg_replace("#([\/]+)#i", '/', self::removeSlashes(strtok($uri, '?')));
+		$uri = preg_replace('/([\/]+)/i', '/', trim(strtok($uri, '?'), '/'));
 
-		foreach ($all as $route) {
-			$c_pattern = self::removeSlashes($route['pattern']);
+		$s_uri = explode("/", $uri);
+		if (sizeof($s_uri) === 1 && $s_uri[0] === "")
+			unset($s_uri[0]);
 
-			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(.+)', $c_pattern);
-			$pattern = preg_replace('/{(.+)\((.+)\)}/i', '(\2)', $pattern);
-			$pattern = preg_replace('/{\((.+)\)}/i', '(\1)', $pattern);
+		foreach ($routes as $route) {
+			$m_pattern = trim($route['pattern'], '/');
+			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(\w)', $m_pattern);
+			$pattern = preg_replace('/{([a-zA-Z0-9]+):(\(.+\))}/i', '\2', $pattern);
+			$pattern = preg_replace('/{(\(.+\))}/i', '\1', $pattern);
 
-			if (preg_match("#^$pattern$#i", $uri, $matches)) {
+			$s_pattern = explode("/", $pattern);
+
+			if (sizeof($s_pattern) === 1 && $s_pattern[0] === "")
+				unset($s_pattern[0]);
+
+			if (sizeof($s_uri) === sizeof($s_pattern)) {
 				$data = [];
-				array_shift($matches);
-				preg_match_all('/{([a-zA-Z0-9]+)(}|\()/i', $c_pattern, $found);
 
-				foreach ($matches as $k => $match) {
-					$data[$found[1][$k]] = $match;
+				$is_good = true;
+
+				for ($i = 0; $i < sizeof($s_uri); $i++) {
+					if (preg_match("/^{$s_pattern[$i]}$/i", $s_uri[$i], $match)) {
+						if (isset($match[0][0]))
+							array_push($data, $match[0][0]);
+					} else {
+						$is_good = false;
+						break;
+					}
 				}
 
-				self::$route = [
+				if ($is_good) {
+					self::$route = [
 						'route' => $route,
 						'matches' => $data,
 						'query' => $GLOBALS['_' . $method]
-				];
+					];
 
-				return self::$route;
+					return self::$route;
+				}
 			}
 		}
 
 		return false;
+
 	}
 }

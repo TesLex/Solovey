@@ -2,3 +2,4 @@
 app/
 index.php
 src/*.dev.php
+*.dev.*
