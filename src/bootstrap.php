@@ -14,8 +14,6 @@ use Solovey\Exception\RouteException;
 use Solovey\Routing\Router;
 use Solovey\Solovey;
 
-require "utils.php";
-
 try {
 
 	// Have access??
