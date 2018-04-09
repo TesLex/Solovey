@@ -31,6 +31,20 @@ class Database
 	 */
 	public function __construct($host, $port = 3306, $user, $name, $password, $driver = 'mysql')
 	{
+		$this->init($host, $port, $user, $name, $password, $driver);
+	}
+
+
+	/**
+	 * @param $host
+	 * @param int $port
+	 * @param $user
+	 * @param $name
+	 * @param $password
+	 * @param string $driver
+	 */
+	public function init($host, $port = 3306, $user, $name, $password, $driver = 'mysql')
+	{
 		$this->host = $host;
 		$this->user = $user;
 		$this->name = $name;
@@ -57,7 +71,7 @@ class Database
 	 * @param array ...$what
 	 * @return Select
 	 */
-	function select(...$what)
+	public static function select(...$what)
 	{
 		return new Select($what);
 	}
@@ -67,7 +81,7 @@ class Database
 	 * @param $where
 	 * @return Insert
 	 */
-	function insert($where)
+	public static function insert($where)
 	{
 		return new Insert($where);
 	}
@@ -77,7 +91,7 @@ class Database
 	 * @param $what
 	 * @return Update
 	 */
-	function update($what)
+	public static function update($what)
 	{
 		return new Update($what);
 	}
@@ -87,7 +101,7 @@ class Database
 	 * @param $from
 	 * @return Delete
 	 */
-	function delete($from)
+	public static function delete($from)
 	{
 		return new Delete($from);
 	}
@@ -96,7 +110,7 @@ class Database
 	 * @param $query
 	 * @return Query
 	 */
-	function query($query) {
+	public static function query($query) {
 		return new Query($query);
 	}
 }
