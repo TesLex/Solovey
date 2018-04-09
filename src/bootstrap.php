@@ -75,6 +75,6 @@ try {
 	if (is_null($func)) {
 		error($e->getMessage(), $e->getCode());
 	} else {
-		call_user_func_array($func, [$e->getMessage(), $e->getCode()]);
+		call_user_func_array($func, [$e]);
 	}
 }
