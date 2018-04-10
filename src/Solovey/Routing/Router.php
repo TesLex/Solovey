@@ -2,6 +2,9 @@
 
 namespace Solovey\Routing;
 
+use function preg_match;
+use function preg_match_all;
+
 class Router
 {
 
@@ -210,7 +213,7 @@ class Router
 
 		foreach ($routes as $route) {
 			$m_pattern = trim($route['pattern'], '/');
-			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(\w)', $m_pattern);
+			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(\w+)', $m_pattern);
 			$pattern = preg_replace('/{([a-zA-Z0-9]+):(\(.+\))}/i', '\2', $pattern);
 			$pattern = preg_replace('/{(\(.+\))}/i', '\1', $pattern);
 
@@ -226,8 +229,8 @@ class Router
 
 				for ($i = 0; $i < sizeof($s_uri); $i++) {
 					if (preg_match("/^{$s_pattern[$i]}$/i", $s_uri[$i], $match)) {
-						if (isset($match[0][0]))
-							array_push($data, $match[0][0]);
+						if (preg_match_all("/([!\(.+\)]|[!\[.+\]])/i", $s_pattern[$i]) && isset($match[0]))
+							array_push($data, $match[0]);
 					} else {
 						$is_good = false;
 						break;
