@@ -17,38 +17,6 @@ class Router
 
 	protected static $groups = array();
 
-
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param $controllers
-	 * @param array $middleware | in dev
-	 */
-	public static function GROUP($name, $pattern, $controllers, $middleware = [])
-	{
-		foreach ($controllers as $method => $controller) {
-			if ($method = 0)
-				$method = 'GET';
-
-			$c_name = $name . '_' . $controller[0];
-			$c_pattern = $pattern . $controller[1];
-			$c_controller = $controller[2];
-			$c_mid = $controller[3];
-
-			if ($method == 'GET') {
-				self::GET($c_name, $c_pattern, $c_controller, $c_mid);
-			} elseif ($method == 'POST') {
-				self::POST($c_name, $c_pattern, $c_controller, $c_mid);
-			} elseif ($method == 'PUT') {
-				self::PUT($c_name, $c_pattern, $c_controller, $c_mid);
-			} elseif ($method == 'DELETE') {
-				self::DELETE($c_name, $c_pattern, $c_controller, $c_mid);
-			} else {
-				self::ANY($c_name, $c_pattern, $c_controller, $c_mid);;
-			}
-		}
-	}
-
 	/**
 	 * @param $name
 	 * @param $pattern
@@ -179,6 +147,39 @@ class Router
 			'action' => $action,
 			'middleware' => $middleware
 		];
+	}
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param $controllers
+	 * @param array $middleware | in dev
+	 */
+	public static function GROUP($name, $pattern, $controllers, $middleware = [])
+	{
+		// TODO: Доробити це.
+
+		foreach ($controllers as $method => $controller) {
+			if ($method = 0)
+				$method = 'GET';
+
+			$c_name = $name . '_' . $controller[0];
+			$c_pattern = $pattern . $controller[1];
+			$c_controller = $controller[2];
+			$c_mid = $controller[3];
+
+			if ($method == 'GET') {
+				self::GET($c_name, $c_pattern, $c_controller, $c_mid);
+			} elseif ($method == 'POST') {
+				self::POST($c_name, $c_pattern, $c_controller, $c_mid);
+			} elseif ($method == 'PUT') {
+				self::PUT($c_name, $c_pattern, $c_controller, $c_mid);
+			} elseif ($method == 'DELETE') {
+				self::DELETE($c_name, $c_pattern, $c_controller, $c_mid);
+			} else {
+				self::ANY($c_name, $c_pattern, $c_controller, $c_mid);;
+			}
+		}
 	}
 
 	public static function check($uri, $method)

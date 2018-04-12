@@ -1,10 +1,11 @@
 <?php
 /**
  * | -----------------------------
- * | Created by exp on 4/2/18/1:19 AM.
+ * | Created by expexes on 29.11.17/22:47.
  * | Site: teslex.tech
  * | ------------------------------
  * | index.php
+ * | Main file. Router root.
  * | ---
  */
 

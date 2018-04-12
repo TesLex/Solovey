@@ -67,7 +67,7 @@ function error($reason = 'something wrong', $code = 500)
 
 function response(array $response)
 {
-	header('Content-Type: application/json');
+//	header('Content-Type: application/json');
 	print json_encode($response);
 }
 
@@ -80,6 +80,10 @@ function r(...$s)
 	echo('</pre>');
 }
 
+function hasImplements($class, $interface)
+{
+	return in_array($interface, class_implements($class));
+}
 
 /* ----- */
 
@@ -107,10 +111,16 @@ function a2o(array $array, $className)
 function o2a($object)
 {
 	$a = [];
-	$reflection = new ReflectionClass($object);
-	foreach ($reflection->getProperties() as $property) {
-		$property->setAccessible(true);
-		$a[$property->getName()] = $property->getValue($object);
+	try {
+		$reflection = new \ReflectionClass($object);
+		do {
+			foreach ($reflection->getProperties() as $property) {
+				$property->setAccessible(true);
+				$a[$property->getName()] = $property->getValue($object);
+			}
+		} while ($reflection = $reflection->getParentClass());
+	} catch (\ReflectionException $e) {
+		throw $e;
 	}
 	return $a;
 }

@@ -55,21 +55,22 @@ class Query
 	public function execute()
 	{
 		$stmt = null;
+		$pdo = Database::getPdo();
 
 		if ($this->transactional) {
 			try {
-				Database::$pdo->beginTransaction();
+				$pdo->beginTransaction();
 
-				$stmt = Database::$pdo->prepare($this->query);
+				$stmt = $pdo->prepare($this->query);
 				$stmt->execute($this->data);
 
-				Database::$pdo->commit();
+				$pdo->commit();
 			} catch (Exception $e) {
-				Database::$pdo->rollBack();
+				$pdo->rollBack();
 				echo $e->getMessage();
 			}
 		} else {
-			$stmt = Database::$pdo->prepare($this->query);
+			$stmt = $pdo->prepare($this->query);
 			$stmt->execute($this->data);
 		}
 

@@ -4,6 +4,7 @@ namespace Solovey\Database;
 
 use PDO;
 use PDOException;
+use Solovey\Database\Methods\Crud;
 use Solovey\Database\Methods\Query;
 
 class Database
@@ -55,4 +56,24 @@ class Database
 	{
 		return new Query($query);
 	}
+
+
+	/**
+	 * @param $className
+	 * @return Crud
+	 */
+	public static function crud($className)
+	{
+		return new Crud($className);
+	}
+
+	/**
+	 * @return PDO
+	 */
+	public static function getPdo(): PDO
+	{
+		return self::$pdo;
+	}
+
+
 }
