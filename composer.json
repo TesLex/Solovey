@@ -10,8 +10,6 @@
 		}
 	],
 	"minimum-stability": "dev",
-	"version": "0.2.4-dev",
-	// TODO: change it!!!
 	"require": {},
 	"autoload": {
 		"psr-4": {
