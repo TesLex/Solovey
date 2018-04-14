@@ -75,7 +75,7 @@ class Database
 	 * @param int $perPage
 	 * @return Pagination
 	 */
-	public static function pagination($className, int $perPage)
+	public static function pagination($className, int $perPage = 10)
 	{
 		return new Pagination($className, $perPage);
 	}

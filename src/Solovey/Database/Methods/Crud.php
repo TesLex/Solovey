@@ -16,6 +16,8 @@ use Solovey\Database\Database;
 use Solovey\Database\Model\Table;
 use Solovey\Exception\SoloveyException;
 use Solovey\Service\I\CrudService;
+use function array_push;
+use function get_class_vars;
 
 class Crud implements CrudService
 {
@@ -95,15 +97,23 @@ class Crud implements CrudService
 
 	/**
 	 * @param $object
+	 * @param array $fields
 	 * @return mixed
 	 */
-	function get($object)
+	function get($object, $fields = [])
 	{
 		$norm = self::normalizeByClass($this->className);
 		$table = $norm['table'];
 		$key = $norm['key'];
 
-		$query = "SELECT * FROM $table WHERE $key = ?";
+		foreach ($fields as $index => $field)
+			if (!in_array($field, $norm['data']['keys']))
+				unset($fields[$index]);
+
+		$fields = empty($fields) ? '*' : implode(',', $fields);
+
+		$query = "SELECT $fields FROM $table WHERE $key = ?";
+
 		$result = Database::query($query)->data([$object])->execute()->fetch();
 
 		return $result ? a2o($result, $this->className) : false;
@@ -121,10 +131,19 @@ class Crud implements CrudService
 
 		$table = call_user_func(array($clazz, 'getTable'));
 		$key = call_user_func(array($clazz, 'getKey'));
+		$keysTmp = get_class_vars($clazz);
+
+		$keys = [];
+
+		foreach ($keysTmp as $index => $keyTmp)
+			array_push($keys, $index);
 
 		return [
 			'table' => $table,
-			'key' => $key
+			'key' => $key,
+			'data' => [
+				'keys' => $keys
+			]
 		];
 	}
 

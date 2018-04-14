@@ -2,6 +2,10 @@
 
 namespace Solovey\Routing;
 
+use ReflectionClass;
+use function call_user_func_array;
+use function in_array;
+use function is_callable;
 use function preg_match;
 use function preg_match_all;
 
@@ -9,13 +13,34 @@ class Router
 {
 
 	public static $route = array();
-	protected static $gets = array();
-	protected static $posts = array();
-	protected static $puts = array();
-	protected static $deletes = array();
-	protected static $anys = array();
+	public static $GETS = array();
+	public static $POSTS = array();
+	public static $PUTS = array();
+	public static $DELETES = array();
+	public static $ANYS = array();
 
-	protected static $groups = array();
+	public static $GROUPS = array();
+
+	public static $methods = ['GET', 'POST', 'PUT', 'DELETE', 'ANY'];
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param $controllers
+	 * @param array $middleware | in dev
+	 */
+	public static function GROUP($name, $pattern, array $controllers, $middleware = [])
+	{
+		foreach ($controllers as $index => $controller) {
+			if (!in_array($index, self::$methods)) {
+				self::GET("$name-$index", "$pattern/$index", $controller, $middleware);
+			} else {
+				foreach ($controller as $indexX => $control) {
+					call_user_func_array([Router::class, $index], ["$name-$indexX", "$pattern/$indexX", $control, $middleware]);
+				}
+			}
+		}
+	}
 
 	/**
 	 * @param $name
@@ -33,83 +58,7 @@ class Router
 			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
 
-		self::$gets[$name] = [
-			'name' => $name,
-			'pattern' => $pattern,
-			'controller' => $controllerX,
-			'action' => $action,
-			'middleware' => $middleware
-		];
-	}
-
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param array $controller
-	 * @param array|null $middleware
-	 */
-	public static function POST($name, $pattern, $controller = [], $middleware = [])
-	{
-		$action = 'index';
-		$controllerX = $controller;
-
-		if (!is_callable($controller)) {
-			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
-			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
-		}
-
-		self::$posts[$name] = [
-			'name' => $name,
-			'pattern' => $pattern,
-			'controller' => $controllerX,
-			'action' => $action,
-			'middleware' => $middleware
-		];
-	}
-
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param array $controller
-	 * @param array|null $middleware
-	 */
-	public static function PUT($name, $pattern, $controller = [], $middleware = [])
-	{
-		$action = 'index';
-		$controllerX = $controller;
-
-		if (!is_callable($controller)) {
-			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
-			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
-		}
-
-		self::$puts[$name] = [
-			'name' => $name,
-			'pattern' => $pattern,
-			'controller' => $controllerX,
-			'action' => $action,
-			'middleware' => $middleware
-		];
-	}
-
-	/**
-	 * @param $name
-	 * @param $pattern
-	 * @param array $controller
-	 * @param array|null $middleware
-	 */
-	public static function DELETE($name, $pattern, $controller = [], $middleware = [])
-	{
-		$action = 'index';
-		$controllerX = $controller;
-
-		if (!is_callable($controller)) {
-			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
-			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
-		}
-
-		self::$deletes[$name] = [
-			'name' => $name,
+		self::$GETS[$name] = [
 			'pattern' => $pattern,
 			'controller' => $controllerX,
 			'action' => $action,
@@ -140,8 +89,7 @@ class Router
 			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
 
-		self::$anys[$name] = [
-			'name' => $name,
+		self::$ANYS[$name] = [
 			'pattern' => $pattern,
 			'controller' => $controllerX,
 			'action' => $action,
@@ -152,48 +100,86 @@ class Router
 	/**
 	 * @param $name
 	 * @param $pattern
-	 * @param $controllers
-	 * @param array $middleware | in dev
+	 * @param array $controller
+	 * @param array|null $middleware
 	 */
-	public static function GROUP($name, $pattern, $controllers, $middleware = [])
+	public static function POST($name, $pattern, $controller = [], $middleware = [])
 	{
-		// TODO: Доробити це.
+		$action = 'index';
+		$controllerX = $controller;
 
-		foreach ($controllers as $method => $controller) {
-			if ($method = 0)
-				$method = 'GET';
-
-			$c_name = $name . '_' . $controller[0];
-			$c_pattern = $pattern . $controller[1];
-			$c_controller = $controller[2];
-			$c_mid = $controller[3];
-
-			if ($method == 'GET') {
-				self::GET($c_name, $c_pattern, $c_controller, $c_mid);
-			} elseif ($method == 'POST') {
-				self::POST($c_name, $c_pattern, $c_controller, $c_mid);
-			} elseif ($method == 'PUT') {
-				self::PUT($c_name, $c_pattern, $c_controller, $c_mid);
-			} elseif ($method == 'DELETE') {
-				self::DELETE($c_name, $c_pattern, $c_controller, $c_mid);
-			} else {
-				self::ANY($c_name, $c_pattern, $c_controller, $c_mid);;
-			}
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
 		}
+
+		self::$POSTS[$name] = [
+			'pattern' => $pattern,
+			'controller' => $controllerX,
+			'action' => $action,
+			'middleware' => $middleware
+		];
 	}
 
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param array $controller
+	 * @param array|null $middleware
+	 */
+	public static function PUT($name, $pattern, $controller = [], $middleware = [])
+	{
+		$action = 'index';
+		$controllerX = $controller;
+
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
+
+		self::$PUTS[$name] = [
+			'pattern' => $pattern,
+			'controller' => $controllerX,
+			'action' => $action,
+			'middleware' => $middleware
+		];
+	}
+
+	/**
+	 * @param $name
+	 * @param $pattern
+	 * @param array $controller
+	 * @param array|null $middleware
+	 */
+	public static function DELETE($name, $pattern, $controller = [], $middleware = [])
+	{
+		$action = 'index';
+		$controllerX = $controller;
+
+		if (!is_callable($controller)) {
+			$controllerX = isset($controller['class']) ? $controller['class'] : $controller[0];
+			$action = isset($controller['action']) ? $controller['action'] : isset($controller[1]) ? $controller[1] : 'index';
+		}
+
+		self::$DELETES[$name] = [
+			'pattern' => $pattern,
+			'controller' => $controllerX,
+			'action' => $action,
+			'middleware' => $middleware
+		];
+	}
+
+	/**
+	 * @param $uri
+	 * @param $method
+	 * @return array|bool
+	 */
 	public static function check($uri, $method)
 	{
-		if ($method == 'GET') {
-			return self::match(self::$gets, $uri, $method);
-		} elseif ($method == 'POST') {
-			return self::match(self::$posts, $uri, $method);
-		} elseif ($method == 'PUT') {
-			return self::match(self::$puts, $uri, $method);
-		} elseif ($method == 'DELETE') {
-			return self::match(self::$deletes, $uri, $method);
+		if (in_array($method, self::$methods)) {
+			return self::match(self::readVal($method . "S"), $uri, $method);
 		} else {
-			return self::match(self::$anys, $uri, $method);
+			return self::match(self::$ANYS, $uri, $method);
 		}
 	}
 
@@ -213,7 +199,7 @@ class Router
 			unset($s_uri[0]);
 
 		foreach ($routes as $route) {
-			$m_pattern = trim($route['pattern'], '/');
+			$m_pattern = preg_replace('/([\/]+)/i', '/', trim(strtok($route['pattern'], '?'), '/'));
 			$pattern = preg_replace('/{([a-zA-Z0-9]+)}/i', '(\w+)', $m_pattern);
 			$pattern = preg_replace('/{([a-zA-Z0-9]+):(\(.+\))}/i', '\2', $pattern);
 			$pattern = preg_replace('/{(\(.+\))}/i', '\1', $pattern);
@@ -251,6 +237,11 @@ class Router
 		}
 
 		return false;
+	}
 
+	private static function readVal($val)
+	{
+		$c = new ReflectionClass(Router::class);
+		return $c->getStaticPropertyValue($val);
 	}
 }

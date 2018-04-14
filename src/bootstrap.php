@@ -57,9 +57,8 @@ try {
 		$action = $route['route']['action'];
 		$middlewareList = $route['route']['middleware'];
 
-		if (sizeof($route['route']['middleware']) > 0)
-			foreach ($middlewareList as $middleware)
-				call_user_func(array(new $middleware(), 'index'));
+		foreach ($middlewareList as $middleware)
+			call_user_func(array(new $middleware(), 'index'));
 
 		if ($matches != null) {
 			is_callable($controller) ? call_user_func_array($controller, $matches) : call_user_func_array(array(new $controller(), $action), $matches);
