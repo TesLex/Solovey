@@ -288,3 +288,26 @@ function getMimeType($filename)
 	}
 }
 
+
+/* ----- */
+
+function criteriaToSQL($criteria = [])
+{
+	$query = "";
+	$data = [];
+
+	foreach ($criteria as $index => $criterion) {
+		if (preg_match("/{(.+)}/i", $index, $match)) {
+			$key = preg_replace("/{(.+)}/i", ' \1', $index);
+			$query .= "$key ?, ";
+		} else {
+			$query .= "$index = ?, ";
+		}
+
+		array_push($data, $criterion);
+	}
+
+	$query = substr($query, 0, strlen($query) - 2);
+
+	return ['query' => $query, 'data' => $data];
+}

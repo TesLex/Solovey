@@ -15,6 +15,7 @@ use Solovey\Database\Database;
 use function a2o;
 use function array_push;
 use function ceil;
+use function criteriaToSQL;
 
 class Pagination
 {
@@ -22,16 +23,19 @@ class Pagination
 	private $table = null;
 	private $keys = [];
 	private $perPage = null;
+	private $criteria = [];
 
 	/**
 	 * Pagination constructor.
 	 * @param string $className
-	 * @param $perPage
+	 * @param int $perPage
+	 * @param array $criteria
 	 */
-	public function __construct($className, $perPage)
+	public function __construct($className, int $perPage = 10, array $criteria = [])
 	{
 		$this->className = $className;
 		$this->perPage = $perPage;
+		$this->criteria = $criteria;
 
 		$this->table = Crud::normalizeByClass($this->className)['table'];
 		$this->keys = Crud::normalizeByClass($this->className)['data']['keys'];
@@ -43,8 +47,12 @@ class Pagination
 	function count()
 	{
 		$query = "SELECT Count(*) FROM $this->table";
+		$critQL = criteriaToSQL($this->criteria);
 
-		return ceil(Database::query($query)->execute()->fetchColumn() / $this->perPage);
+		if (empty($this->criteria))
+			return ceil(Database::query($query)->execute()->fetchColumn() / $this->perPage);
+		else
+			return ceil(Database::query("$query WHERE {$critQL['query']}")->data($critQL['data'])->execute()->fetchColumn() / $this->perPage);
 	}
 
 	/**
@@ -62,8 +70,16 @@ class Pagination
 
 		$fields = empty($fields) ? '*' : implode(',', $fields);
 
-		$query = "SELECT $fields FROM $this->table LIMIT $this->perPage OFFSET $offset";
-		$result = Database::query($query)->execute()->fetchAll();
+		$query = "SELECT $fields FROM $this->table";
+		$limits = "LIMIT $this->perPage OFFSET $offset";
+
+		$critQL = criteriaToSQL($this->criteria);
+
+		if (empty($this->criteria))
+			$result = Database::query("$query $limits")->execute()->fetchAll();
+		else
+			$result = Database::query("$query WHERE {$critQL['query']} $limits")->data($critQL['data'])->execute()->fetchAll();
+
 		$all = [];
 
 		foreach ($result as $res) {
@@ -72,5 +88,4 @@ class Pagination
 
 		return $all;
 	}
-
 }

@@ -73,11 +73,12 @@ class Database
 	/**
 	 * @param string $className
 	 * @param int $perPage
+	 * @param array $criteria
 	 * @return Pagination
 	 */
-	public static function pagination($className, int $perPage = 10)
+	public static function pagination($className, int $perPage = 10, array $criteria = [])
 	{
-		return new Pagination($className, $perPage);
+		return new Pagination($className, $perPage, $criteria);
 	}
 
 	/**
