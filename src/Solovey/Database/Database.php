@@ -2,9 +2,11 @@
 
 namespace Solovey\Database;
 
+use Exception;
 use PDO;
 use PDOException;
 use Solovey\Database\Methods\Crud;
+use Solovey\Database\Methods\Pagination;
 use Solovey\Database\Methods\Query;
 
 class Database
@@ -49,7 +51,7 @@ class Database
 	}
 
 	/**
-	 * @param $query
+	 * @param string $query
 	 * @return Query
 	 */
 	public static function query($query)
@@ -59,12 +61,31 @@ class Database
 
 
 	/**
-	 * @param $className
+	 * @param string $className
 	 * @return Crud
 	 */
 	public static function crud($className)
 	{
 		return new Crud($className);
+	}
+
+
+	/**
+	 * @param string $className
+	 * @param int $perPage
+	 * @return Pagination
+	 */
+	public static function pagination($className, int $perPage)
+	{
+		return new Pagination($className, $perPage);
+	}
+
+	/**
+	 * Start a transaction
+	 */
+	public static function startTransaction()
+	{
+		self::getPdo()->beginTransaction();
 	}
 
 	/**
@@ -73,6 +94,20 @@ class Database
 	public static function getPdo(): PDO
 	{
 		return self::$pdo;
+	}
+
+	/**
+	 * Commit transaction changes
+	 * @throws Exception
+	 */
+	public static function commitTransaction()
+	{
+		try {
+			self::getPdo()->commit();
+		} catch (Exception $e) {
+			self::getPdo()->rollBack();
+			throw $e;
+		}
 	}
 
 

@@ -11,7 +11,6 @@
 namespace Solovey\Database\Methods;
 
 
-use Exception;
 use Solovey\Database\Database;
 
 class Query
@@ -19,7 +18,6 @@ class Query
 
 	private $query = '';
 	private $data = [];
-	private $transactional = false;
 
 	/**
 	 * Query constructor.
@@ -41,15 +39,6 @@ class Query
 	}
 
 	/**
-	 * @return $this
-	 */
-	public function transactional()
-	{
-		$this->transactional = true;
-		return $this;
-	}
-
-	/**
 	 * @return \PDOStatement
 	 */
 	public function execute()
@@ -57,22 +46,8 @@ class Query
 		$stmt = null;
 		$pdo = Database::getPdo();
 
-		if ($this->transactional) {
-			try {
-				$pdo->beginTransaction();
-
-				$stmt = $pdo->prepare($this->query);
-				$stmt->execute($this->data);
-
-				$pdo->commit();
-			} catch (Exception $e) {
-				$pdo->rollBack();
-				echo $e->getMessage();
-			}
-		} else {
-			$stmt = $pdo->prepare($this->query);
-			$stmt->execute($this->data);
-		}
+		$stmt = $pdo->prepare($this->query);
+		$stmt->execute($this->data);
 
 		return $stmt;
 	}

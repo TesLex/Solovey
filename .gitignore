@@ -3,3 +3,4 @@ app/
 index.php
 src/*.dev.php
 *.dev.*
+composer.lock

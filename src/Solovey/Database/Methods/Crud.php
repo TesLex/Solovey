@@ -57,7 +57,7 @@ class Crud implements CrudService
 	 * @return array
 	 * @throws SoloveyException
 	 */
-	private static function normalize(Table $object)
+	public static function normalize(Table $object)
 	{
 		$clazz = get_class($object);
 
@@ -114,7 +114,7 @@ class Crud implements CrudService
 	 * @return array
 	 * @throws SoloveyException
 	 */
-	private static function normalizeByClass($clazz)
+	public static function normalizeByClass($clazz)
 	{
 		if (!hasImplements($clazz, Table::class))
 			throw new SoloveyException("Class $clazz has't implements Table.class.");
