@@ -16,6 +16,7 @@ use function a2o;
 use function array_push;
 use function ceil;
 use function criteriaToSQL;
+use function r;
 
 class Pagination
 {
@@ -74,6 +75,8 @@ class Pagination
 		$limits = "LIMIT $this->perPage OFFSET $offset";
 
 		$critQL = criteriaToSQL($this->criteria);
+
+		r("$query WHERE {$critQL['query']} $limits");
 
 		if (empty($this->criteria))
 			$result = Database::query("$query $limits")->execute()->fetchAll();

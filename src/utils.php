@@ -297,8 +297,13 @@ function criteriaToSQL($criteria = [])
 	$data = [];
 
 	foreach ($criteria as $index => $criterion) {
-		if (preg_match("/{(.+)}/i", $index, $match)) {
-			$key = preg_replace("/{(.+)}/i", ' \1', $index);
+		if (preg_match("/{([\=|\<|\>|a-zA-Z ]+){(.+)}}/i", $index, $match)) {
+			$key = preg_replace('/{([\=|\<|\>|a-zA-Z ]+){(.+)(\#)(.+)}}/i', '{\1{\2' . $criterion . '\4}}', $index);
+			$key = preg_replace('/{([\=|\<|\>|a-zA-Z ]+){(.+)}}/i', ' \1 \'\2\'', $key);
+			$query .= "$key, ";
+			continue;
+		} else if (preg_match("/{([\=|\<|\>|a-zA-Z ]+)}/i", $index, $match)) {
+			$key = preg_replace('/{([\=|\<|\>|a-zA-Z ]+)}/i', ' \1', $index);
 			$query .= "$key ?, ";
 		} else {
 			$query .= "$index = ?, ";
